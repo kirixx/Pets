@@ -15,6 +15,9 @@ namespace RTTI
     class CClassId
     {
     public:
+        //generation of unique constants should not be inlined
+        //should be exported from the only one place where type of instance is created
+        //for each class in hierarchy, including template instances
         CClassId(const std::string& className) noexcept
             : mName(className)
             , mIndex(++gLastClassIndex)
@@ -39,11 +42,7 @@ namespace RTTI
         CDynamicType() noexcept {};
         virtual ~CDynamicType() noexcept {};
 
-        static const CClassId& id() noexcept
-        {
-            static const CClassId id("CCDynamicType");
-            return id;
-        }
+        static const CClassId& id() noexcept;
 
         virtual const CClassId& who() const noexcept { return id(); }
 
@@ -108,3 +107,9 @@ namespace RTTI
         return id();                                                            \
     }                                                                           \
     static const RTTI::CClassId& id() noexcept
+
+const RTTI::CClassId& RTTI::CDynamicType::id() noexcept
+{
+    static const RTTI::CClassId id("CCDynamicType");
+    return id;
+}
