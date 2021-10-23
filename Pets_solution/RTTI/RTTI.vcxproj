@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\RTTI\RTTI.cpp" />
     <ClCompile Include="src\Vehicles\Car.cpp" />
     <ClCompile Include="src\Vehicles\Vehicle.cpp" />
   </ItemGroup>

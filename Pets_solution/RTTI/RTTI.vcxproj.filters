@@ -4,6 +4,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Vehicles\Car.cpp" />
     <ClCompile Include="src\Vehicles\Vehicle.cpp" />
+    <ClCompile Include="src\RTTI\RTTI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Vehicles\Vehicle.h" />

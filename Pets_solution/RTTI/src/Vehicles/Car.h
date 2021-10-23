@@ -8,7 +8,8 @@ public:
         : base(vehicleTypeName)
         , mBrandName(brandName)
     {}
-    ~CCar() {}
+
+    virtual ~CCar() {}
 
     DERIVED_FROM(CVehicle);
 
