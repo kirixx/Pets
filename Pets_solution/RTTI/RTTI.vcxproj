@@ -148,6 +148,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Vehicles\Car.cpp" />
+    <ClCompile Include="src\Vehicles\Vehicle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Vehicles\Car.h" />
+    <ClInclude Include="src\Vehicles\Vehicle.h" />
+    <ClInclude Include="src\RTTI\RTTI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

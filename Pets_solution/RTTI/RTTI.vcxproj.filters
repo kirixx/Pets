@@ -2,5 +2,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Vehicles\Car.cpp" />
+    <ClCompile Include="src\Vehicles\Vehicle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Vehicles\Vehicle.h" />
+    <ClInclude Include="src\Vehicles\Car.h" />
+    <ClInclude Include="src\RTTI\RTTI.h" />
   </ItemGroup>
 </Project>
