@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <iostream>
+
 class Printer
 {
 public:
@@ -40,3 +41,19 @@ private:
     std::weak_ptr<int> mWeakPointer;
     std::shared_ptr<int> mSharedPointer;
 };
+
+void weakPtrUseCase()
+{
+    Printer obj;
+    std::shared_ptr<int> weakTest = std::make_shared<int>(11);
+    std::shared_ptr<int> sharedTest = std::make_shared<int>(11);
+    obj.setWeakValue(weakTest);
+    obj.setSharedValue(sharedTest);
+
+    std::cout << "free the resources of shared and weak pointers\n";
+    weakTest = nullptr;
+    sharedTest = nullptr;
+
+    obj.printSharedP();
+    obj.printWeakP();
+}

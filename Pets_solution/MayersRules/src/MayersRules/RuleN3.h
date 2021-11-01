@@ -30,3 +30,16 @@ public:
 private:
     std::string mText;
 };
+
+void mayersRule3()
+{
+    std::cout << "Rule N3 use the const modifier wherever it possible\n";
+
+    CRuleN3 nonConstUsing("Non Const");
+
+    std::cout << nonConstUsing[0] << '\n';
+
+    const CRuleN3 constUsing("Const");
+
+    std::cout << constUsing[1] << '\n';
+}

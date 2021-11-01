@@ -1,5 +1,6 @@
 #include "MayersRules/RuleN3.h"
 #include "CompleteModernC++/Printer.h"
+#include "CompleteModernC++/Deleter.h"
 
 enum class eTests
 {
@@ -17,35 +18,6 @@ eTests chooseTheTest()
     return static_cast<eTests>(test);
 }
 
-void weakPtrUseCase()
-{
-    Printer obj;
-    std::shared_ptr<int> weakTest = std::make_shared<int>(11);
-    std::shared_ptr<int> sharedTest = std::make_shared<int>(11);
-    obj.setWeakValue(weakTest);
-    obj.setSharedValue(sharedTest);
-
-    std::cout << "free the resources of shared and weak pointers\n";
-    weakTest = nullptr;
-    sharedTest = nullptr;
-  
-    obj.printSharedP();
-    obj.printWeakP();
-}
-
-void mayersRule3()
-{
-    std::cout << "Rule N3 use the const modifier wherever it possible\n";
-    
-    CRuleN3 nonConstUsing("Non Const");
-
-    std::cout << nonConstUsing[0] << '\n';
-
-    const CRuleN3 constUsing("Const");
-
-    std::cout << constUsing[1] << '\n';
-}
-
 int main()
 {
     while (true)
@@ -53,9 +25,14 @@ int main()
         switch (chooseTheTest())
         {
         case eTests::COMPLETE_MODERN_Cpp:
+            std::cout << "***WEAK PTR USE CASE***\n";
             weakPtrUseCase();
+            std::cout << "\n***DELETERS FOR SMART POINTERS***\n";
+            Deleter::uniquePtrDeleterTest();
+            Deleter::sharedPtrDeleterTest();
             break;
         case eTests::MAYERS_RULES:
+            std::cout << "***ALWAYS USE CONST WHEREVER IT POSSIBLE***\n";
             mayersRule3();
             break;
         default:
