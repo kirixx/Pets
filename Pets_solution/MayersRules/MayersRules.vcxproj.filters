@@ -4,6 +4,7 @@
     <ClInclude Include="src\MayersRules\RuleN3.h" />
     <ClInclude Include="src\CompleteModernC++\Printer.h" />
     <ClInclude Include="src\CompleteModernC++\Deleter.h" />
+    <ClInclude Include="src\CompleteModernC++\StringPractice.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />

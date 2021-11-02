@@ -1,45 +1,27 @@
 #include "MayersRules/RuleN3.h"
 #include "CompleteModernC++/Printer.h"
 #include "CompleteModernC++/Deleter.h"
-
-enum class eTests
-{
-    COMPLETE_MODERN_Cpp = 1,
-    MAYERS_RULES = 2
-};
-
-eTests chooseTheTest()
-{
-    uint16_t test = 0;
-    std::cout << "1.Complete Modern C++ tests\n" <<
-                 "2.Mayers rules\n";
-    std::cin >> test;
-    std::cout << '\n';
-    return static_cast<eTests>(test);
-}
+#include "CompleteModernC++/StringPractice.h"
 
 int main()
 {
-    while (true)
-    {
-        switch (chooseTheTest())
-        {
-        case eTests::COMPLETE_MODERN_Cpp:
-            std::cout << "***WEAK PTR USE CASE***\n";
-            weakPtrUseCase();
-            std::cout << "\n***DELETERS FOR SMART POINTERS***\n";
-            Deleter::uniquePtrDeleterTest();
-            Deleter::sharedPtrDeleterTest();
-            break;
-        case eTests::MAYERS_RULES:
-            std::cout << "***ALWAYS USE CONST WHEREVER IT POSSIBLE***\n";
-            mayersRule3();
-            break;
-        default:
-            std::cout << "choose another one\n";
-            break;
-        }
-    }
+    std::cout << "***WEAK PTR USE CASE***\n";
+    weakPtrUseCase();
+    std::cout << "\n***DELETERS FOR SMART POINTERS***\n";
+    Deleter::uniquePtrDeleterTest();
+    Deleter::sharedPtrDeleterTest();
+
+    std::cout << "***ALWAYS USE CONST WHEREVER IT POSSIBLE***\n";
+    mayersRule3();
+
+    std::cout << "***STRING CONVERSION AND CASE SENSITIVE FIND***\n";
+    std::string up = StringPractice::ConvertToCase(std::string("boom"), StringPractice::Case::TO_UPPER);
+    std::string low = StringPractice::ConvertToCase(std::string("BAM"), StringPractice::Case::TO_LOWER);
+    
+    std::string src("RUN boom");
+    std::string patt("BOOM");
+
+    size_t pos = StringPractice::Find(src, patt);
 
     return 0;
 }

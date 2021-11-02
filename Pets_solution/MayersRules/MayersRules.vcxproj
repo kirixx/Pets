@@ -150,6 +150,7 @@
   <ItemGroup>
     <ClInclude Include="src\CompleteModernC++\Deleter.h" />
     <ClInclude Include="src\CompleteModernC++\Printer.h" />
+    <ClInclude Include="src\CompleteModernC++\StringPractice.h" />
     <ClInclude Include="src\MayersRules\RuleN3.h" />
   </ItemGroup>
   <ItemGroup>
