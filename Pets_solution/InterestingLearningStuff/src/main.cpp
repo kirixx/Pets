@@ -3,6 +3,7 @@
 #include "CompleteModernC++/Deleter.h"
 #include "CompleteModernC++/StringPractice.h"
 #include <vector>
+#include <future>
 
 namespace TemplateTest
 {
@@ -28,6 +29,67 @@ namespace TemplateTest
     {
         Container< Type, std::allocator < Type > > baz;
     };
+
+    template<class T> 
+    T Add(T x, T y)
+    {
+        T sum = x + y;
+        std::cout << __FUNCSIG__ << sum << '\n';
+        return sum;
+    }
+
+    template <class T>
+    T ArraySum(T* pArray, T size)
+    {
+        T retVal = 0;
+        for (T i = 0; i < size; ++i)
+        {
+            retVal += pArray[i];
+        }
+        std::cout << __FUNCSIG__ << retVal << '\n';
+        return retVal;
+    }
+
+    template <class T>
+    T Max(T* pArray, T size)
+    {
+        T retVal = size > 0 ? pArray[0] : 0;
+        for (T i = 0; i < size; ++i)
+        {
+            retVal = pArray[i] > retVal ? pArray[i] : retVal;
+        }
+        std::cout << __FUNCSIG__ << retVal << '\n';
+        return retVal;
+    }
+
+    //variadic
+    void Print() {
+        std::cout << std::endl;
+    }
+
+    //Template parameter pack
+    template<typename T, typename...Params>
+    //Function parameter pack
+    void Print(T&& a, Params&&... args) {
+        //std::cout << sizeof...(args) << std::endl;
+        //std::cout << sizeof...(Params) << std::endl;
+        std::cout << a;
+        if (sizeof...(args) != 0) {
+            std::cout << ",";
+        }
+        //We can forward a function parameter pack
+        Print(std::forward<Params>(args)...);
+    }
+
+    /*
+    1. Print(1, 2.5, 3, "4") ;
+    2. Print(2.5, 3, "4") ;
+    3. Print(3, "4") ;
+    4. Print("4") ;
+    5. Print() ;
+    */
+
+
 
 }
 
@@ -58,6 +120,13 @@ int main()
     std::cout << f.get_wrapped_value() << '\n';
 
     TemplateTest::Example<std::vector, int> a;
+    
+    TemplateTest::Add(3, 5);
+    int ar[] = { 1,2,3,4 };
+    TemplateTest::ArraySum(ar, 4);
+    TemplateTest::Max(ar, 4);
+
+    TemplateTest::Print(0, 1, 2, 4.5, "BOOM");
 
     return 0;
 }
