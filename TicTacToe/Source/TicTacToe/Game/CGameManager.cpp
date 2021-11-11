@@ -29,10 +29,7 @@ namespace GameManagerHelpers
     }
 }
 
-CGameManager::CGameManager() 
-{
-
-}
+CGameManager::CGameManager() {}
 
 void CGameManager::MadeAMove(ATicTacToeBlock* block)
 {
@@ -67,8 +64,8 @@ void CGameManager::MadeAMove(ATicTacToeBlock* block)
 bool CGameManager::CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner,
                                const GameTypes::eCheckFieldDirection checkDirection)
 {
-    using gameField = std::vector<std::vector<ATicTacToeBlock*>>;
-    gameField field = CGameField::GetInstance().GetGameField();
+    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
+    GameField field = CGameField::GetInstance().GetGameField();
     // need to collect 4 point in a row for win
     static int8 score = 0;
 

@@ -21,8 +21,8 @@ ATicTacToeBlock* AIHandler::Move()
     {
         return nullptr;
     }
-    using gameField = std::vector<std::vector<ATicTacToeBlock*>>;
-    gameField field = CGameField::GetInstance().GetGameField();
+    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
+    GameField field = CGameField::GetInstance().GetGameField();
 
     for (SIZE_T i  = 0; i < field.size(); ++i)
     {
