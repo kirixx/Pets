@@ -13,7 +13,7 @@ void UCWinnerWidget::NativeConstruct()
     Super::NativeConstruct();
 }
 
-void UCWinnerWidget::ShowWinner(const GameTypes::Player& player)
+void UCWinnerWidget::ShowWinner(const GameTypes::ePlayer player)
 {
     if (TXTWinner)
     {
@@ -21,11 +21,11 @@ void UCWinnerWidget::ShowWinner(const GameTypes::Player& player)
         {
             TXTWinner->SetVisibility(ESlateVisibility::Visible);
         }
-        if (player == GameTypes::Player::PLAYER_X)
+        if (player == GameTypes::ePlayer::PLAYER_X)
         {
             TXTWinner->SetText(FText::FromString("Player X wins"));
         }
-        else if (player == GameTypes::Player::PLAYER_O)
+        else if (player == GameTypes::ePlayer::PLAYER_O)
         {
             TXTWinner->SetText(FText::FromString("Player O wins"));
         }

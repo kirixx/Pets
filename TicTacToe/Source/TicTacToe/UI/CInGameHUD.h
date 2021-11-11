@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "../Game/Types.h"
+#include "Game/Types.h"
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Components/WidgetComponent.h"
@@ -29,9 +29,9 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	void UpdateWinner(const GameTypes::Player& player);
+	void UpdateWinner(const GameTypes::ePlayer player);
 
-	void ChangeTurn(const GameTypes::Player& player);
+	void ChangeTurn(const GameTypes::ePlayer player);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UUserWidget> WinnerWidgetClass;

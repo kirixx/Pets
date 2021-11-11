@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "../Game/Types.h"
+#include "Game/Types.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Runtime/UMG/Public/UMG.h"
@@ -20,7 +20,7 @@ public:
 
     virtual void NativeConstruct() override;
 
-    void ShowWinner(const GameTypes::Player& player);
+    void ShowWinner(const GameTypes::ePlayer player);
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
     class UTextBlock* TXTWinner;

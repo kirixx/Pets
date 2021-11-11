@@ -13,13 +13,6 @@ ATicTacToeBlockGrid::ATicTacToeBlockGrid()
 	DummyRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Dummy0"));
 	RootComponent = DummyRoot;
 
-	// Create static mesh component
-	ScoreText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("ScoreText0"));
-	ScoreText->SetRelativeLocation(FVector(200.f,0.f,0.f));
-	ScoreText->SetRelativeRotation(FRotator(90.f,0.f,0.f));
-	ScoreText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(0)));
-	ScoreText->SetupAttachment(DummyRoot);
-
 	// Set defaults
 	Size = 8;
 	BlockSpacing = 130.0f;
@@ -49,7 +42,7 @@ void ATicTacToeBlockGrid::GenerateGameField()
 				{
 					NewBlock->OwningGrid = this;
 					NewBlock->SetFieldPos({ i, j });
-					NewBlock->SetPlayer(GameTypes::Player::PLAYER_NONE);
+					NewBlock->SetPlayer(GameTypes::ePlayer::PLAYER_NONE);
 				}
 				CGameField::GetInstance().GetGameField()[i][j] = NewBlock;
 			}
@@ -69,9 +62,6 @@ void ATicTacToeBlockGrid::AddScore()
 {
 	// Increment score
 	Score++;
-
-	// Update text
-	ScoreText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(Score)));
 }
 
 #undef LOCTEXT_NAMESPACE

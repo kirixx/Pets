@@ -49,9 +49,9 @@ public:
 
 	GameTypes::FieldPos GetGameFieldPos() const { return mGameFieldPos; }
 
-	void SetPlayer(const GameTypes::Player player) { mOwner = player; }
+	void SetPlayer(const GameTypes::ePlayer player) { mOwner = player; }
 
-	GameTypes::Player GetPlayer() const { return mOwner; }
+	GameTypes::ePlayer GetPlayer() const { return mOwner; }
 
 public:
 	/** Returns DummyRoot subobject **/
@@ -61,7 +61,7 @@ public:
 	
 private:
 
-	GameTypes::Player		mOwner;
+	GameTypes::ePlayer		mOwner;
 	GameTypes::FieldPos		mGameFieldPos;
 };
 

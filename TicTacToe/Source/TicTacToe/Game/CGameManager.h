@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 
-#include "../TicTacToeBlock.h"
+#include "TicTacToeBlock.h"
 #include "Types.h"
 /**
  * 
@@ -13,11 +13,11 @@ public:
     CGameManager();
     ~CGameManager() {}
 
-    static GameTypes::Player PLAYER; 
-    static GameTypes::Player GetPlayer() { return PLAYER; }
+    static GameTypes::ePlayer sPlayerTurn; 
+    static GameTypes::ePlayer GetPlayer() { return sPlayerTurn; }
 
-    bool CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::Player owner,
-                     const GameTypes::CheckFieldDirection checkDirection = GameTypes::CheckFieldDirection::IDLE);
+    bool CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner,
+                     const GameTypes::eCheckFieldDirection checkDirection = GameTypes::eCheckFieldDirection::IDLE);
     
-    void MadeAMove(UStaticMeshComponent* block, const GameTypes::FieldPos& fieldPos);
+    void MadeAMove(ATicTacToeBlock* block);
 };

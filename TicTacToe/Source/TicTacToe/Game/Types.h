@@ -4,14 +4,14 @@ namespace GameTypes
 {
     const int8 WIN_POINTS = 4;
 
-    enum class Player
+    enum class ePlayer
     {
         PLAYER_NONE,
         PLAYER_X,
         PLAYER_O
     };
 
-    enum class CheckFieldDirection
+    enum class eCheckFieldDirection
     {
         HORIZONTAL_LEFT,
         HORIZONTAL_RIGHT,
@@ -21,7 +21,7 @@ namespace GameTypes
         DIAGONAL_UP_LEFT,
         DIAGONAL_DOWN_RIGHT,
         DIAGONAL_DOWN_LEFT,
-        IDLE,
+        IDLE
     };
 
     struct FieldPos

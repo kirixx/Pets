@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "../Game/Types.h"
+#include "Game/Types.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Runtime/UMG/Public/UMG.h"
@@ -19,7 +19,7 @@ public:
 
     virtual void NativeConstruct() override;
 
-    void ChangeTurn(const GameTypes::Player& player);
+    void ChangeTurn(const GameTypes::ePlayer player);
 
 private:
     UPROPERTY(Transient, meta = (BindWidgetAnim))

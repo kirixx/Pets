@@ -1,10 +1,10 @@
 
 #include "CGameManager.h"
 #include "CGameField.h"
-#include "../UI/CInGameHUD.h"
-#include "../Renderer/CMaterialManager.h"
+#include "UI/CInGameHUD.h"
+#include "Renderer/CMaterialManager.h"
 
-GameTypes::Player CGameManager::PLAYER = GameTypes::Player::PLAYER_X;
+GameTypes::ePlayer CGameManager::sPlayerTurn = GameTypes::ePlayer::PLAYER_X;
 
 #define SCORE_CHECK(SCORE)         \
 if (GameTypes::WIN_POINTS <= SCORE)\
@@ -18,13 +18,13 @@ namespace GameManagerHelpers
 {
     void ChangeTurn()
     {
-        if (CGameManager::PLAYER == GameTypes::Player::PLAYER_X)
+        if (CGameManager::sPlayerTurn == GameTypes::ePlayer::PLAYER_X)
         {
-            CGameManager::PLAYER = GameTypes::Player::PLAYER_O;
+            CGameManager::sPlayerTurn = GameTypes::ePlayer::PLAYER_O;
         }
-        else if (CGameManager::PLAYER == GameTypes::Player::PLAYER_O)
+        else if (CGameManager::sPlayerTurn == GameTypes::ePlayer::PLAYER_O)
         {
-            CGameManager::PLAYER = GameTypes::Player::PLAYER_X;
+            CGameManager::sPlayerTurn = GameTypes::ePlayer::PLAYER_X;
         }
     }
 }
@@ -34,25 +34,29 @@ CGameManager::CGameManager()
 
 }
 
-void CGameManager::MadeAMove(UStaticMeshComponent* block, const GameTypes::FieldPos& fieldPos)
+void CGameManager::MadeAMove(ATicTacToeBlock* block)
 {
-    // Change material
-    if (PLAYER == GameTypes::Player::PLAYER_X)
+    if (!block)
     {
-        block->SetMaterial(0, CMaterialManager::GetInstance().TTT_Cross_Texture);
+        return;
+    }
+    // Change material
+    if (sPlayerTurn == GameTypes::ePlayer::PLAYER_X)
+    {
+        block->GetBlockMesh()->SetMaterial(0, CMaterialManager::GetInstance().TTT_Cross_Texture);
     }
     else
     {
-        block->SetMaterial(0, CMaterialManager::GetInstance().TTT_O_Texture);
+        block->GetBlockMesh()->SetMaterial(0, CMaterialManager::GetInstance().TTT_O_Texture);
     }
 
     ACInGameHUD* InGameHUD = Cast<ACInGameHUD>(block->GetWorld()->GetFirstPlayerController()->GetHUD());
     if (InGameHUD)
     {
-        if (CheckForWin(fieldPos, CGameManager::GetPlayer()))
+        if (CheckForWin(block->GetGameFieldPos(), CGameManager::GetPlayer()))
         {
             InGameHUD->UpdateWinner(CGameManager::GetPlayer());
-            PLAYER = GameTypes::Player::PLAYER_X;
+            sPlayerTurn = GameTypes::ePlayer::PLAYER_X;
             return;
         }
         GameManagerHelpers::ChangeTurn();
@@ -60,8 +64,8 @@ void CGameManager::MadeAMove(UStaticMeshComponent* block, const GameTypes::Field
     }
 }
 
-bool CGameManager::CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::Player owner,
-                               const GameTypes::CheckFieldDirection checkDirection)
+bool CGameManager::CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner,
+                               const GameTypes::eCheckFieldDirection checkDirection)
 {
     using gameField = std::vector<std::vector<ATicTacToeBlock*>>;
     gameField field = CGameField::GetInstance().GetGameField();
@@ -80,43 +84,43 @@ bool CGameManager::CheckForWin(const GameTypes::FieldPos& fieldPosition, const G
     ++score;
     switch (checkDirection)
     {
-    case GameTypes::CheckFieldDirection::IDLE:
+    case GameTypes::eCheckFieldDirection::IDLE:
         SCORE_CHECK(score)
-        CheckForWin({ fieldPosition.i, fieldPosition.j + 1 }, owner, GameTypes::CheckFieldDirection::HORIZONTAL_RIGHT);
-        CheckForWin({ fieldPosition.i, fieldPosition.j - 1 }, owner, GameTypes::CheckFieldDirection::HORIZONTAL_LEFT);
+        CheckForWin({ fieldPosition.i, fieldPosition.j + 1 }, owner, GameTypes::eCheckFieldDirection::HORIZONTAL_RIGHT);
+        CheckForWin({ fieldPosition.i, fieldPosition.j - 1 }, owner, GameTypes::eCheckFieldDirection::HORIZONTAL_LEFT);
         SCORE_CHECK(score)
-        CheckForWin({ fieldPosition.i + 1, fieldPosition.j }, owner, GameTypes::CheckFieldDirection::VERTICAL_UP);
-        CheckForWin({ fieldPosition.i - 1, fieldPosition.j }, owner, GameTypes::CheckFieldDirection::VERTICAL_DOWN);
+        CheckForWin({ fieldPosition.i + 1, fieldPosition.j }, owner, GameTypes::eCheckFieldDirection::VERTICAL_UP);
+        CheckForWin({ fieldPosition.i - 1, fieldPosition.j }, owner, GameTypes::eCheckFieldDirection::VERTICAL_DOWN);
         SCORE_CHECK(score)
-        CheckForWin({ fieldPosition.i + 1, fieldPosition.j + 1 }, owner, GameTypes::CheckFieldDirection::DIAGONAL_UP_RIGHT);
-        CheckForWin({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, GameTypes::CheckFieldDirection::DIAGONAL_DOWN_LEFT);
+        CheckForWin({ fieldPosition.i + 1, fieldPosition.j + 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_UP_RIGHT);
+        CheckForWin({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_LEFT);
         SCORE_CHECK(score)
-        CheckForWin({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, GameTypes::CheckFieldDirection::DIAGONAL_UP_LEFT);
-        CheckForWin({ fieldPosition.i + 1, fieldPosition.j - 1}, owner, GameTypes::CheckFieldDirection::DIAGONAL_DOWN_RIGHT);
+        CheckForWin({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_UP_LEFT);
+        CheckForWin({ fieldPosition.i + 1, fieldPosition.j - 1}, owner, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_RIGHT);
         SCORE_CHECK(score)
         break;
-    case GameTypes::CheckFieldDirection::HORIZONTAL_RIGHT:
+    case GameTypes::eCheckFieldDirection::HORIZONTAL_RIGHT:
         CheckForWin({ fieldPosition.i, fieldPosition.j + 1 }, owner, checkDirection);
         break;
-    case GameTypes::CheckFieldDirection::HORIZONTAL_LEFT:
+    case GameTypes::eCheckFieldDirection::HORIZONTAL_LEFT:
         CheckForWin({ fieldPosition.i, fieldPosition.j - 1 }, owner, checkDirection);
         break;
-    case GameTypes::CheckFieldDirection::VERTICAL_UP:
+    case GameTypes::eCheckFieldDirection::VERTICAL_UP:
         CheckForWin({ fieldPosition.i + 1, fieldPosition.j }, owner, checkDirection);
         break;
-    case GameTypes::CheckFieldDirection::VERTICAL_DOWN:
+    case GameTypes::eCheckFieldDirection::VERTICAL_DOWN:
         CheckForWin({ fieldPosition.i - 1, fieldPosition.j }, owner, checkDirection);
         break;
-    case GameTypes::CheckFieldDirection::DIAGONAL_UP_RIGHT:
+    case GameTypes::eCheckFieldDirection::DIAGONAL_UP_RIGHT:
         CheckForWin({ fieldPosition.i + 1, fieldPosition.j + 1}, owner, checkDirection);
         break;
-    case GameTypes::CheckFieldDirection::DIAGONAL_UP_LEFT:
+    case GameTypes::eCheckFieldDirection::DIAGONAL_UP_LEFT:
         CheckForWin({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, checkDirection);
         break;
-    case GameTypes::CheckFieldDirection::DIAGONAL_DOWN_RIGHT:
+    case GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_RIGHT:
         CheckForWin({ fieldPosition.i + 1, fieldPosition.j - 1 }, owner, checkDirection);
         break;
-    case GameTypes::CheckFieldDirection::DIAGONAL_DOWN_LEFT:
+    case GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_LEFT:
         CheckForWin({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, checkDirection);
         break;
     default:

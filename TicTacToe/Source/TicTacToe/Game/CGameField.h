@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 
 #include <vector>
-#include "../TicTacToeBlock.h"
+#include "TicTacToeBlock.h"
 /**
  * 
  */

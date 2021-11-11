@@ -33,7 +33,7 @@ void ACInGameHUD::Tick(float DeltaSeconds)
 }
 
 
-void ACInGameHUD::UpdateWinner(const GameTypes::Player& player)
+void ACInGameHUD::UpdateWinner(const GameTypes::ePlayer player)
 {
     if (WinnerWidgetClass)
     {
@@ -46,7 +46,7 @@ void ACInGameHUD::UpdateWinner(const GameTypes::Player& player)
     }
 }
 
-void ACInGameHUD::ChangeTurn(const GameTypes::Player& player)
+void ACInGameHUD::ChangeTurn(const GameTypes::ePlayer player)
 {
     if (mPlayerTurnWidget)
     {

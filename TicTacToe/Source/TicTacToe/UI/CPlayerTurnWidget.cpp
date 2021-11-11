@@ -13,15 +13,15 @@ void UCPlayerTurnWidget::NativeConstruct()
     Super::NativeConstruct();
 }
 
-void UCPlayerTurnWidget::ChangeTurn(const GameTypes::Player& player)
+void UCPlayerTurnWidget::ChangeTurn(const GameTypes::ePlayer player)
 {
     if (PlayerXTurn && PlayerOTurn)
     {
-        if (player == GameTypes::Player::PLAYER_X)
+        if (player == GameTypes::ePlayer::PLAYER_X)
         {
             PlayAnimation(PlayerXTurn, 0.f, 1, EUMGSequencePlayMode::Forward, 1.f);
         }
-        else if (player == GameTypes::Player::PLAYER_O)
+        else if (player == GameTypes::ePlayer::PLAYER_O)
         {
             PlayAnimation(PlayerOTurn, 0.f, 1, EUMGSequencePlayMode::Forward, 1.f);
         }

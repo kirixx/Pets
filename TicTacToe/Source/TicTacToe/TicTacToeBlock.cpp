@@ -10,7 +10,7 @@
 
 
 ATicTacToeBlock::ATicTacToeBlock() 
-	: mOwner(GameTypes::Player::PLAYER_NONE)
+	: mOwner(GameTypes::ePlayer::PLAYER_NONE)
 	, mGameFieldPos({0, 0})
 {
 	//// Structure to hold one-time initialization
@@ -62,7 +62,7 @@ void ATicTacToeBlock::HandleClicked()
 			OwningGrid->AddScore();
 		}
 		CGameManager gameManager;
-		gameManager.MadeAMove(BlockMesh, GetGameFieldPos());
+		gameManager.MadeAMove(this);
 	}
 }
 
