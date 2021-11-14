@@ -14,18 +14,18 @@ ATicTacToeBlockGrid::ATicTacToeBlockGrid()
 	RootComponent = DummyRoot;
 
 	// Set defaults
-	Size = 8;
+	Size = GameTypes::GAME_FIELD_SIZE / 8; // 8 * 8
 	BlockSpacing = 130.0f;
 }
 
 void ATicTacToeBlockGrid::GenerateGameField()
 {
 	const int32 NumBlocks = Size * Size;
-	CGameField::GetInstance().GetGameField().resize(Size);
+	CGameField::GetInstance()->GetGameField().resize(Size);
 	// Loop to spawn each block
 	for (int32 i = 0; i < Size; ++i)
 	{
-		CGameField::GetInstance().GetGameField()[i].resize(Size);
+		CGameField::GetInstance()->GetGameField()[i].resize(Size);
 		for (int32 j = 0; j < Size; ++j)
 		{
 			const float XOffset = (i + j / NumBlocks) * BlockSpacing; // Divide by dimension
@@ -41,10 +41,10 @@ void ATicTacToeBlockGrid::GenerateGameField()
 				if (NewBlock != nullptr)
 				{
 					NewBlock->OwningGrid = this;
-					NewBlock->SetFieldPos({ i, j });
+					NewBlock->SetFieldPos({ static_cast<SIZE_T>(i), static_cast<SIZE_T>(j) });
 					NewBlock->SetPlayer(GameTypes::ePlayer::PLAYER_NONE);
 				}
-				CGameField::GetInstance().GetGameField()[i][j] = NewBlock;
+				CGameField::GetInstance()->GetGameField()[i][j] = NewBlock;
 			}
 		}
 	}

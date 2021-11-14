@@ -17,7 +17,7 @@ AAIActor::AAIActor()
 void AAIActor::BeginPlay()
 {
 	Super::BeginPlay();
-	float DeltaTime = 3;
+	float DeltaTime = 2;
 	SetActorTickInterval(DeltaTime);
 	InitAIHandler(GameTypes::ePlayer::PLAYER_O);
 }
@@ -26,11 +26,11 @@ void AAIActor::BeginPlay()
 void AAIActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CGameManager gameManager;
-	gameManager.MadeAMove(mAIHandler.Move());
+	CGameManager::GetInstance()->MadeAMove(mAIHandler.Move());
 }
 
 void AAIActor::InitAIHandler(const GameTypes::ePlayer side)
 {
+	CGameManager::GetInstance()->InitAI(side);
 	mAIHandler.SetAISide(side);
 }

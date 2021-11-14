@@ -52,17 +52,15 @@ void ATicTacToeBlock::OnFingerPressedBlock(ETouchIndex::Type FingerIndex, UPrimi
 void ATicTacToeBlock::HandleClicked()
 {
 	// Check we are not already active
-	if (!bIsActive)
+	if (GetPlayer() == GameTypes::ePlayer::PLAYER_NONE)
 	{
-		bIsActive = true;
-		SetPlayer(CGameManager::GetPlayer());
+		SetPlayer(CGameManager::GetPlayerTurn());
 		// Tell the Grid
 		if (OwningGrid != nullptr)
 		{
 			OwningGrid->AddScore();
 		}
-		CGameManager gameManager;
-		gameManager.MadeAMove(this);
+		CGameManager::GetInstance()->MadeAMove(this);
 	}
 }
 

@@ -6,14 +6,6 @@
 
 GameTypes::ePlayer CGameManager::sPlayerTurn = GameTypes::ePlayer::PLAYER_X;
 
-#define SCORE_CHECK(SCORE)         \
-if (GameTypes::WIN_POINTS <= SCORE)\
-{                                  \
-    SCORE = 0;                     \
-    return true;                   \
-}                                  \
-SCORE = 1;                         \
-
 namespace GameManagerHelpers
 {
     void ChangeTurn()
@@ -29,10 +21,10 @@ namespace GameManagerHelpers
     }
 }
 
-CGameManager::CGameManager() {}
-
 void CGameManager::MadeAMove(ATicTacToeBlock* block)
 {
+    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
+    GameField field = CGameField::GetInstance()->GetGameField();
     if (!block)
     {
         return;
@@ -46,82 +38,94 @@ void CGameManager::MadeAMove(ATicTacToeBlock* block)
     {
         block->GetBlockMesh()->SetMaterial(0, CMaterialManager::GetInstance().TTT_O_Texture);
     }
-
+    CGameField::GetInstance()->StoreLastMovePos(block->GetGameFieldPos(), sPlayerTurn);
     ACInGameHUD* InGameHUD = Cast<ACInGameHUD>(block->GetWorld()->GetFirstPlayerController()->GetHUD());
     if (InGameHUD)
     {
-        if (CheckForWin(block->GetGameFieldPos(), CGameManager::GetPlayer()))
+        if (CheckForWin(block->GetGameFieldPos(), CGameManager::GetPlayerTurn()))
         {
-            InGameHUD->UpdateWinner(CGameManager::GetPlayer());
+            InGameHUD->UpdateWinner(CGameManager::GetPlayerTurn());
             sPlayerTurn = GameTypes::ePlayer::PLAYER_X;
             return;
         }
         GameManagerHelpers::ChangeTurn();
-        InGameHUD->ChangeTurn(CGameManager::GetPlayer());
+        InGameHUD->ChangeTurn(CGameManager::GetPlayerTurn());
     }
 }
 
-bool CGameManager::CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner,
-                               const GameTypes::eCheckFieldDirection checkDirection)
+int32 CGameManager::GetPositionScore(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner)
 {
-    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
-    GameField field = CGameField::GetInstance().GetGameField();
-    // need to collect 4 point in a row for win
-    static int8 score = 0;
+    int8 maxScore = 0;
+    GetScoreByDirections(fieldPosition, owner, maxScore);
+    return maxScore;
+}
 
-    if ((fieldPosition.i < 0 || fieldPosition.j < 0) || 
+void CGameManager::GetScoreByDirections(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner, int8& maxScore,
+                                        const GameTypes::eCheckFieldDirection checkDirection)
+{
+    static int8 currentScore = 0;
+    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
+    GameField field = CGameField::GetInstance()->GetGameField();
+
+    if ((fieldPosition.i < 0 || fieldPosition.j < 0) ||
         (field.size() <= fieldPosition.i || field[fieldPosition.i].size() <= fieldPosition.j))
     {
-        return false;
+        return;
     }
-    if (field[fieldPosition.i][fieldPosition.j]->GetPlayer() != owner && GameTypes::WIN_POINTS > score)
+    if (field[fieldPosition.i][fieldPosition.j]->GetPlayer() != owner)
     {
-        return false;
+        return;
     }
-    ++score;
+    ++currentScore;
     switch (checkDirection)
     {
     case GameTypes::eCheckFieldDirection::IDLE:
-        SCORE_CHECK(score)
-        CheckForWin({ fieldPosition.i, fieldPosition.j + 1 }, owner, GameTypes::eCheckFieldDirection::HORIZONTAL_RIGHT);
-        CheckForWin({ fieldPosition.i, fieldPosition.j - 1 }, owner, GameTypes::eCheckFieldDirection::HORIZONTAL_LEFT);
-        SCORE_CHECK(score)
-        CheckForWin({ fieldPosition.i + 1, fieldPosition.j }, owner, GameTypes::eCheckFieldDirection::VERTICAL_UP);
-        CheckForWin({ fieldPosition.i - 1, fieldPosition.j }, owner, GameTypes::eCheckFieldDirection::VERTICAL_DOWN);
-        SCORE_CHECK(score)
-        CheckForWin({ fieldPosition.i + 1, fieldPosition.j + 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_UP_RIGHT);
-        CheckForWin({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_LEFT);
-        SCORE_CHECK(score)
-        CheckForWin({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_UP_LEFT);
-        CheckForWin({ fieldPosition.i + 1, fieldPosition.j - 1}, owner, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_RIGHT);
-        SCORE_CHECK(score)
+        currentScore = 1;
+        GetScoreByDirections({ fieldPosition.i, fieldPosition.j + 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::HORIZONTAL_RIGHT);
+        GetScoreByDirections({ fieldPosition.i, fieldPosition.j - 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::HORIZONTAL_LEFT);
+        currentScore = 1;
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j }, owner, maxScore, GameTypes::eCheckFieldDirection::VERTICAL_UP);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j }, owner, maxScore, GameTypes::eCheckFieldDirection::VERTICAL_DOWN);
+        currentScore = 1;
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j + 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::DIAGONAL_UP_RIGHT);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_LEFT);
+        currentScore = 1;
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::DIAGONAL_UP_LEFT);
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j - 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_RIGHT);
+        currentScore = 1;
         break;
     case GameTypes::eCheckFieldDirection::HORIZONTAL_RIGHT:
-        CheckForWin({ fieldPosition.i, fieldPosition.j + 1 }, owner, checkDirection);
+        GetScoreByDirections({ fieldPosition.i, fieldPosition.j + 1 }, owner, maxScore, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::HORIZONTAL_LEFT:
-        CheckForWin({ fieldPosition.i, fieldPosition.j - 1 }, owner, checkDirection);
+        GetScoreByDirections({ fieldPosition.i, fieldPosition.j - 1 }, owner, maxScore, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::VERTICAL_UP:
-        CheckForWin({ fieldPosition.i + 1, fieldPosition.j }, owner, checkDirection);
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j }, owner, maxScore, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::VERTICAL_DOWN:
-        CheckForWin({ fieldPosition.i - 1, fieldPosition.j }, owner, checkDirection);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j }, owner, maxScore, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::DIAGONAL_UP_RIGHT:
-        CheckForWin({ fieldPosition.i + 1, fieldPosition.j + 1}, owner, checkDirection);
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j + 1 }, owner, maxScore, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::DIAGONAL_UP_LEFT:
-        CheckForWin({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, checkDirection);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, maxScore, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_RIGHT:
-        CheckForWin({ fieldPosition.i + 1, fieldPosition.j - 1 }, owner, checkDirection);
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j - 1 }, owner, maxScore, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_LEFT:
-        CheckForWin({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, checkDirection);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, maxScore, checkDirection);
         break;
     default:
         break;
     }
-    return false;
+    maxScore = FGenericPlatformMath::Max(currentScore, maxScore);
+    currentScore = 0;
+}
+
+bool CGameManager::CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner)
+{
+    return GetPositionScore(fieldPosition, owner) >= GameTypes::WIN_POINTS;
 }

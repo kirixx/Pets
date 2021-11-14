@@ -2,13 +2,17 @@
 
 namespace GameTypes
 {
-    const int8 WIN_POINTS = 4;
+    const int8   WIN_POINTS            = 4;
+    const uint8  RECURSION_DEPTH       = 3;
+    const uint8  FIELD_SNAPSHOT_RADIUS = 4;
+    const SIZE_T GAME_FIELD_SIZE       = 8 * 8;
 
     enum class ePlayer
     {
-        PLAYER_NONE,
+        PLAYER_NONE = 1,
         PLAYER_X,
         PLAYER_O
+
     };
 
     enum class eCheckFieldDirection
@@ -26,7 +30,13 @@ namespace GameTypes
 
     struct FieldPos
     {
-        int32 i{ 0 };
-        int32 j{ 0 };
+        SIZE_T i{ 0 };
+        SIZE_T j{ 0 };
     };
+
+    //Get second player
+    static constexpr GameTypes::ePlayer GetOppositePlayer(const GameTypes::ePlayer player)
+    {
+        return player == GameTypes::ePlayer::PLAYER_X ? GameTypes::ePlayer::PLAYER_O : GameTypes::ePlayer::PLAYER_X;
+    }
 }

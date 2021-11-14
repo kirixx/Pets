@@ -12,20 +12,22 @@ class TICTACTOE_API CGameField
 public:
 
     CGameField(const CGameField&) = delete;
-    CGameField(const CGameField&&) = delete;
-    CGameField& operator=(const CGameField&) = delete;
-    CGameField& operator=(CGameField&&) = delete;
 
-
-    static CGameField& GetInstance()
+    static CGameField* GetInstance()
     {
         static CGameField gameField;
-        return gameField;
+        return &gameField;
     }
 
     Field& GetGameField();
+    void StoreLastMovePos(const GameTypes::FieldPos& pos, const GameTypes::ePlayer owner);
+    const GameTypes::FieldPos& GetLastPosition(const GameTypes::ePlayer owner) const;
+
+    std::vector<GameTypes::FieldPos> GetAvailableMoves();
 
 private:
-    CGameField() {};
-    Field mField;
+    CGameField() : mLastPosX(), mLastPosO(), mField() {};
+    GameTypes::FieldPos mLastPosX;
+    GameTypes::FieldPos mLastPosO;
+    Field               mField;
 };

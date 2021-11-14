@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "AIHandler.h"
+#include "CAIHandler.h"
 #include "Game/CGameManager.h"
 #include "AIActor.generated.h"
 
@@ -28,5 +28,5 @@ public:
 	void InitAIHandler(const GameTypes::ePlayer side);
 
 private:
-	AIHandler	 mAIHandler;
+	CAIHandler	 mAIHandler;
 };
