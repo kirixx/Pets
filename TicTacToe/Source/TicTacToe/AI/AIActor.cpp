@@ -16,21 +16,20 @@ AAIActor::AAIActor()
 // Called when the game starts or when spawned
 void AAIActor::BeginPlay()
 {
-	Super::BeginPlay();
-	float DeltaTime = 2;
-	SetActorTickInterval(DeltaTime);
-	InitAIHandler(GameTypes::ePlayer::PLAYER_O);
+    Super::BeginPlay();
+    float DeltaTime = 2;
+    SetActorTickInterval(DeltaTime);
 }
 
 // Called every frame
 void AAIActor::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-	CGameManager::GetInstance()->MadeAMove(mAIHandler.Move());
-}
+    Super::Tick(DeltaTime);
+    auto gameManagerInstance = CGameManager::GetInstance();
+    mAIHandler.SetIsAIVsAI(IsAIVSAI);
 
-void AAIActor::InitAIHandler(const GameTypes::ePlayer side)
-{
-	CGameManager::GetInstance()->SetAI(side);
-	mAIHandler.SetAISide(side);
+    if (IsPlayerVSAi || IsAIVSAI)
+    {
+        CGameManager::GetInstance()->MadeAMove(mAIHandler.Move());
+    }
 }

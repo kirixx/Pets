@@ -53,3 +53,19 @@ void ACInGameHUD::ChangeTurn(const GameTypes::ePlayer player)
         mPlayerTurnWidget->ChangeTurn(player);
     }
 }
+
+void ACInGameHUD::SetPlayersSide(const GameTypes::ePlayer side)
+{
+    if (mPlayerTurnWidget)
+    {
+        mPlayerTurnWidget->SetPlayerSide(side);
+    }
+}
+
+void ACInGameHUD::SetAISide(const GameTypes::ePlayer side)
+{
+    if (mPlayerTurnWidget)
+    {
+        mPlayerTurnWidget->SetAISide(side);
+    }
+}

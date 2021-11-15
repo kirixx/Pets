@@ -52,9 +52,17 @@ void ATicTacToeBlock::OnFingerPressedBlock(ETouchIndex::Type FingerIndex, UPrimi
 void ATicTacToeBlock::HandleClicked()
 {
 	// Check we are not already active
-	if (GetPlayer() == GameTypes::ePlayer::PLAYER_NONE)
+	auto gameManagerInstance = CGameManager::GetInstance();
+
+	if (GameTypes::GameMode::HOTSEAT == gameManagerInstance->GetGameMode())
 	{
-		SetPlayer(CGameManager::GetPlayerTurn());
+		gameManagerInstance->SetPlayerSide(gameManagerInstance->GetPlayerTurn());
+	}
+
+	if (GetPlayer() == GameTypes::ePlayer::PLAYER_NONE &&
+		CGameManager::GetInstance()->GetPlayerSide() == CGameManager::GetPlayerTurn())
+	{
+		SetPlayer(CGameManager::GetInstance()->GetPlayerSide());
 		// Tell the Grid
 		if (OwningGrid != nullptr)
 		{

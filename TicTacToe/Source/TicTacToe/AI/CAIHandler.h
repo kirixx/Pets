@@ -11,16 +11,17 @@
 class TICTACTOE_API CAIHandler
 {
 public:
-    CAIHandler();
+    CAIHandler() : mIsAIVsAi(false) {}
 
-    ~CAIHandler();
+    ~CAIHandler() {}
 
-    void SetAISide(const GameTypes::ePlayer side) { mSide = side; }
-
-public: 
     ATicTacToeBlock* Move();
 
+    void SetIsAIVsAI(const bool isAIvsAI) { mIsAIVsAi = isAIvsAI; }
+
+    GameTypes::FieldPos DoDumbMove();
+
 private:
-    GameTypes::ePlayer mSide;
+    bool mIsAIVsAi;
 
 };

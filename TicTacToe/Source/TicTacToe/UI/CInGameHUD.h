@@ -33,6 +33,9 @@ public:
 
 	void ChangeTurn(const GameTypes::ePlayer player);
 
+	void SetPlayersSide(const GameTypes::ePlayer side);
+	void SetAISide(const GameTypes::ePlayer side);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UUserWidget> WinnerWidgetClass;
 

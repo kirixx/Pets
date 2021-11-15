@@ -21,10 +21,19 @@ public:
 
     void ChangeTurn(const GameTypes::ePlayer player);
 
+    void SetPlayerSide(const GameTypes::ePlayer side);
+    void SetAISide(const GameTypes::ePlayer side);
+
 private:
     UPROPERTY(Transient, meta = (BindWidgetAnim))
     UWidgetAnimation* PlayerXTurn;
 
     UPROPERTY(Transient, meta = (BindWidgetAnim))
     UWidgetAnimation* PlayerOTurn;
+
+    UPROPERTY(Transient, meta = (BindWidget))
+    UTextBlock* PlayerSideTxt;
+    UPROPERTY(Transient, meta = (BindWidget))
+    UTextBlock* AISideTxt;
+
 };

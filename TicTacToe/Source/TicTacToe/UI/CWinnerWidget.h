@@ -25,6 +25,15 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
     class UTextBlock* TXTWinner;
 
+    UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+    class UButton* RestartButton;
+
+    UFUNCTION()
+    void RestartButtonClicked();
+
+protected:
+    virtual bool Initialize();
+
 private:
     UPROPERTY(Transient, meta = (BindWidgetAnim))
     UWidgetAnimation* WinnerFadeAnimation;

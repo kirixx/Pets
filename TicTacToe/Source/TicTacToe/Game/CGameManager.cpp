@@ -3,6 +3,7 @@
 #include "CGameField.h"
 #include "UI/CInGameHUD.h"
 #include "Renderer/CMaterialManager.h"
+#include "Engine/World.h"
 
 GameTypes::ePlayer CGameManager::sPlayerTurn = GameTypes::ePlayer::PLAYER_X;
 int32  CGameManager::sCurrentScore            = 0;
@@ -165,4 +166,21 @@ bool CGameManager::CheckForWin(const GameTypes::FieldPos& fieldPosition, const G
 {
     GetPositionScore(fieldPosition, owner);
     return sCurrentScore >= GameTypes::WIN_POINTS;
+}
+
+void CGameManager::SetGameMode(const GameTypes::GameMode gameMode)
+{
+    auto gamefieldInstance = CGameField::GetInstance();
+    ACInGameHUD* InGameHUD = Cast<ACInGameHUD>(gamefieldInstance->GetGameField()[0][0]->GetWorld()->GetFirstPlayerController()->GetHUD());
+    if (GameTypes::GameMode::PLAYER_VS_AI == gameMode)
+    {
+        InGameHUD->SetPlayersSide(mPlayerSide);
+        InGameHUD->SetAISide(mAISide);
+    }
+    else
+    {
+        InGameHUD->SetPlayersSide(GameTypes::ePlayer::PLAYER_NONE);
+        InGameHUD->SetAISide(GameTypes::ePlayer::PLAYER_NONE);
+    }
+    mGameMode = gameMode; 
 }

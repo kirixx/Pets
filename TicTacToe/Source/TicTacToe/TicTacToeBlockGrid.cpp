@@ -3,7 +3,9 @@
 #include "TicTacToeBlockGrid.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/World.h"
+#include "Game/CGameManager.h"
 #include "Game/Types.h"
+
 
 #define LOCTEXT_NAMESPACE "PuzzleBlockGrid"
 

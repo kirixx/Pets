@@ -9,39 +9,38 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Math/UnrealMathUtility.h"
 
-GameTypes::ePlayer sSide = GameTypes::ePlayer::PLAYER_NONE;
-
-CAIHandler::CAIHandler()
-    : mSide(GameTypes::ePlayer::PLAYER_NONE)
-{
-}
-
-CAIHandler::~CAIHandler()
-{
-}
-
 ATicTacToeBlock* CAIHandler::Move()
 {
-    if (CGameManager::sPlayerTurn != mSide)
+    auto gameManagerInstance = CGameManager::GetInstance();
+    auto gameFieldInstance = CGameField::GetInstance();
+    if (CGameManager::sPlayerTurn != gameManagerInstance->GetAISide())
     {
+        if (mIsAIVsAi)
+        {
+            gameManagerInstance->SetAISide(GameTypes::GetOppositePlayer(gameManagerInstance->GetAISide()));
+        }
         return nullptr;
     }
     using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
-    GameField field = CGameField::GetInstance()->GetGameField();
+    GameField field = gameFieldInstance->GetGameField();
     ATicTacToeBlock* bestMove = nullptr;
     int32 bestMoveScore = INT32_MIN;
 
     CAlgorithm algorithm;
-    std::vector<GameTypes::FieldPos> availableMoves = algorithm.GetNodeChildsInRange(CGameField::GetInstance()->GetLastPosition(GameTypes::GetOppositePlayer(mSide)), GameTypes::FIELD_SNAPSHOT_RADIUS);
+    std::vector<GameTypes::FieldPos> availableMoves = 
+        algorithm.GetNodeChildsInRange(
+            gameFieldInstance->GetLastPosition(
+                GameTypes::GetOppositePlayer(
+                    gameManagerInstance->GetAISide())), GameTypes::FIELD_SNAPSHOT_RADIUS);
 
     for (SIZE_T i  = 0; i < availableMoves.size(); ++i)
     {
         GameTypes::FieldPos tempPos = availableMoves[i];
         if (GameTypes::ePlayer::PLAYER_NONE == field[tempPos.i][tempPos.j]->GetPlayer())
         {
-            field[tempPos.i][tempPos.j]->SetPlayer(mSide);
+            field[tempPos.i][tempPos.j]->SetPlayer(gameManagerInstance->GetAISide());
             int32 tempScore = algorithm.Minimax({ tempPos.i, tempPos.j }, 0, INT32_MIN, INT32_MAX,
-                                                mSide, false, GameTypes::FIELD_SNAPSHOT_RADIUS);
+                              gameManagerInstance->GetAISide(), false, GameTypes::FIELD_SNAPSHOT_RADIUS);
             field[tempPos.i][tempPos.j]->SetPlayer(GameTypes::ePlayer::PLAYER_NONE);
             if (tempScore > bestMoveScore)
             {
@@ -50,6 +49,25 @@ ATicTacToeBlock* CAIHandler::Move()
             }
         }
     }
-    bestMove->SetPlayer(mSide);
+    bestMove->SetPlayer(gameManagerInstance->GetAISide());
+    if (mIsAIVsAi)
+    {
+        if (bestMoveScore == 1 - GameTypes::RECURSION_DEPTH)
+        {
+            bestMove->SetFieldPos(DoDumbMove());
+        }
+        gameManagerInstance->SetAISide(GameTypes::GetOppositePlayer(gameManagerInstance->GetAISide()));
+    }
     return  bestMove;
+}
+
+GameTypes::FieldPos CAIHandler::DoDumbMove()
+{
+    SIZE_T i = 0;
+    SIZE_T j = 0;
+
+    i = FMath::RandRange(0, CGameField::GetInstance()->GetGameField().size() - 1);
+    j = FMath::RandRange(0, CGameField::GetInstance()->GetGameField().size() - 1);
+
+    return { i, j };
 }
