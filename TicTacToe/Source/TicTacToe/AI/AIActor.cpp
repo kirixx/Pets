@@ -31,6 +31,6 @@ void AAIActor::Tick(float DeltaTime)
 
 void AAIActor::InitAIHandler(const GameTypes::ePlayer side)
 {
-	CGameManager::GetInstance()->InitAI(side);
+	CGameManager::GetInstance()->SetAI(side);
 	mAIHandler.SetAISide(side);
 }

@@ -32,7 +32,7 @@ ATicTacToeBlock* CAIHandler::Move()
     int32 bestMoveScore = INT32_MIN;
 
     CAlgorithm algorithm;
-    std::vector<GameTypes::FieldPos> availableMoves = algorithm.GetNodeChildsInRange(CGameField::GetInstance()->GetLastPosition(GameTypes::ePlayer::PLAYER_X), GameTypes::FIELD_SNAPSHOT_RADIUS);
+    std::vector<GameTypes::FieldPos> availableMoves = algorithm.GetNodeChildsInRange(CGameField::GetInstance()->GetLastPosition(GameTypes::GetOppositePlayer(mSide)), GameTypes::FIELD_SNAPSHOT_RADIUS);
 
     for (SIZE_T i  = 0; i < availableMoves.size(); ++i)
     {
@@ -40,7 +40,7 @@ ATicTacToeBlock* CAIHandler::Move()
         if (GameTypes::ePlayer::PLAYER_NONE == field[tempPos.i][tempPos.j]->GetPlayer())
         {
             field[tempPos.i][tempPos.j]->SetPlayer(mSide);
-            int32 tempScore = algorithm.Minimax({ tempPos.i, tempPos.j }, GameTypes::RECURSION_DEPTH, INT32_MIN, INT32_MAX, 
+            int32 tempScore = algorithm.Minimax({ tempPos.i, tempPos.j }, 0, INT32_MIN, INT32_MAX,
                                                 mSide, false, GameTypes::FIELD_SNAPSHOT_RADIUS);
             field[tempPos.i][tempPos.j]->SetPlayer(GameTypes::ePlayer::PLAYER_NONE);
             if (tempScore > bestMoveScore)

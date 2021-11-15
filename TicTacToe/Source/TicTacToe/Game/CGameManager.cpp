@@ -5,6 +5,9 @@
 #include "Renderer/CMaterialManager.h"
 
 GameTypes::ePlayer CGameManager::sPlayerTurn = GameTypes::ePlayer::PLAYER_X;
+int32  CGameManager::sCurrentScore            = 0;
+int32  CGameManager::sCurrentScoreForOpponent = 0;
+int32  CGameManager::sMaxScoreGlobal          = 0;
 
 namespace GameManagerHelpers
 {
@@ -55,15 +58,16 @@ void CGameManager::MadeAMove(ATicTacToeBlock* block)
 
 int32 CGameManager::GetPositionScore(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner)
 {
-    int8 maxScore = 0;
-    GetScoreByDirections(fieldPosition, owner, maxScore);
-    return maxScore;
+    sMaxScoreGlobal = 0;
+    sCurrentScore = 0;
+    sCurrentScoreForOpponent = 0;
+    GetScoreByDirections(fieldPosition, owner);
+    return sMaxScoreGlobal;
 }
 
-void CGameManager::GetScoreByDirections(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner, int8& maxScore,
+void CGameManager::GetScoreByDirections(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner,
                                         const GameTypes::eCheckFieldDirection checkDirection)
 {
-    static int8 currentScore = 0;
     using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
     GameField field = CGameField::GetInstance()->GetGameField();
 
@@ -72,60 +76,93 @@ void CGameManager::GetScoreByDirections(const GameTypes::FieldPos& fieldPosition
     {
         return;
     }
-    if (field[fieldPosition.i][fieldPosition.j]->GetPlayer() != owner)
+    if (sCurrentScoreForOpponent == 3 || sCurrentScore == 4)
     {
         return;
     }
-    ++currentScore;
+
+    if (field[fieldPosition.i][fieldPosition.j]->GetPlayer() == GameTypes::GetOppositePlayer(owner))
+    {
+        if (sCurrentScore > 1)
+            return;
+        sCurrentScoreForOpponent++;
+    }
+    else if (field[fieldPosition.i][fieldPosition.j]->GetPlayer() == owner)
+    {
+        if (sCurrentScoreForOpponent > 0)
+            return;
+        ++sCurrentScore;
+    }
+    else
+    {
+        return;
+    }
     switch (checkDirection)
     {
     case GameTypes::eCheckFieldDirection::IDLE:
-        currentScore = 1;
-        GetScoreByDirections({ fieldPosition.i, fieldPosition.j + 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::HORIZONTAL_RIGHT);
-        GetScoreByDirections({ fieldPosition.i, fieldPosition.j - 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::HORIZONTAL_LEFT);
-        currentScore = 1;
-        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j }, owner, maxScore, GameTypes::eCheckFieldDirection::VERTICAL_UP);
-        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j }, owner, maxScore, GameTypes::eCheckFieldDirection::VERTICAL_DOWN);
-        currentScore = 1;
-        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j + 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::DIAGONAL_UP_RIGHT);
-        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_LEFT);
-        currentScore = 1;
-        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::DIAGONAL_UP_LEFT);
-        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j - 1 }, owner, maxScore, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_RIGHT);
-        currentScore = 1;
+        sCurrentScore = 1;
+        sCurrentScoreForOpponent = 0;
+        GetScoreByDirections({ fieldPosition.i, fieldPosition.j + 1 }, owner, GameTypes::eCheckFieldDirection::HORIZONTAL_RIGHT);
+        GetScoreByDirections({ fieldPosition.i, fieldPosition.j - 1 }, owner, GameTypes::eCheckFieldDirection::HORIZONTAL_LEFT);
+        if (IsMaxGlobalCounted()) break;
+        sCurrentScore = 1;
+        sCurrentScoreForOpponent = 0;
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j }, owner, GameTypes::eCheckFieldDirection::VERTICAL_UP);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j }, owner, GameTypes::eCheckFieldDirection::VERTICAL_DOWN);
+        if (IsMaxGlobalCounted()) break;
+        sCurrentScore = 1;
+        sCurrentScoreForOpponent = 0;
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j + 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_UP_RIGHT);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_LEFT);
+        if (IsMaxGlobalCounted()) break;
+        sCurrentScore = 1;
+        sCurrentScoreForOpponent = 0;
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_UP_LEFT);
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j - 1 }, owner, GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_RIGHT);
         break;
     case GameTypes::eCheckFieldDirection::HORIZONTAL_RIGHT:
-        GetScoreByDirections({ fieldPosition.i, fieldPosition.j + 1 }, owner, maxScore, checkDirection);
+        GetScoreByDirections({ fieldPosition.i, fieldPosition.j + 1 }, owner, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::HORIZONTAL_LEFT:
-        GetScoreByDirections({ fieldPosition.i, fieldPosition.j - 1 }, owner, maxScore, checkDirection);
+        GetScoreByDirections({ fieldPosition.i, fieldPosition.j - 1 }, owner, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::VERTICAL_UP:
-        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j }, owner, maxScore, checkDirection);
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j }, owner, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::VERTICAL_DOWN:
-        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j }, owner, maxScore, checkDirection);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j }, owner, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::DIAGONAL_UP_RIGHT:
-        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j + 1 }, owner, maxScore, checkDirection);
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j + 1 }, owner, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::DIAGONAL_UP_LEFT:
-        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, maxScore, checkDirection);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j + 1 }, owner, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_RIGHT:
-        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j - 1 }, owner, maxScore, checkDirection);
+        GetScoreByDirections({ fieldPosition.i + 1, fieldPosition.j - 1 }, owner, checkDirection);
         break;
     case GameTypes::eCheckFieldDirection::DIAGONAL_DOWN_LEFT:
-        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, maxScore, checkDirection);
+        GetScoreByDirections({ fieldPosition.i - 1, fieldPosition.j - 1 }, owner, checkDirection);
         break;
     default:
         break;
     }
-    maxScore = FGenericPlatformMath::Max(currentScore, maxScore);
-    currentScore = 0;
+    sMaxScoreGlobal = FGenericPlatformMath::Max(FGenericPlatformMath::Max(sCurrentScore, sCurrentScoreForOpponent + 1), sMaxScoreGlobal);
+}
+
+bool CGameManager::IsMaxGlobalCounted()
+{
+    bool retVal = false;
+    if (sCurrentScoreForOpponent == 3 || sCurrentScore == 4)
+    {
+        sMaxScoreGlobal = 4;
+        retVal = true;
+    }
+    return retVal;
 }
 
 bool CGameManager::CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner)
 {
-    return GetPositionScore(fieldPosition, owner) >= GameTypes::WIN_POINTS;
+    GetPositionScore(fieldPosition, owner);
+    return sCurrentScore >= GameTypes::WIN_POINTS;
 }

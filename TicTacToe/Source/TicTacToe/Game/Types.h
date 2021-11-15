@@ -2,10 +2,10 @@
 
 namespace GameTypes
 {
-    const int8   WIN_POINTS            = 4;
-    const uint8  RECURSION_DEPTH       = 3;
-    const uint8  FIELD_SNAPSHOT_RADIUS = 4;
-    const SIZE_T GAME_FIELD_SIZE       = 8 * 8;
+    const int8   WIN_POINTS             = 4;
+    const uint8  RECURSION_DEPTH        = 3;
+    const uint8  FIELD_SNAPSHOT_RADIUS  = 4;
+    const SIZE_T GAME_FIELD_SIZE        = 8 * 8;
 
     enum class ePlayer
     {

@@ -4,56 +4,59 @@
 #include "CAlgorithm.h"
 #include "Game/CGameManager.h"
 
-int32 CAlgorithm::Minimax(const GameTypes::FieldPos& pos, int32 depth, int32 alpha, int32 beta, 
+int32 CAlgorithm::Minimax(const GameTypes::FieldPos& pos, int32 depth, int32 alpha, int32 beta,
                           const GameTypes::ePlayer owner, const bool isMaximizing, const int32 fieldSnapshotRadius)
 {
     auto gameFieldInstance = CGameField::GetInstance();
     using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
     GameField field = gameFieldInstance->GetGameField();
-    const int32 WIN_LOSE_SCORE = 8;
     auto gameManagerInstance = CGameManager::GetInstance();
 
-    if (gameManagerInstance->CheckForWin(pos, owner))
+    int32 maxScore = gameManagerInstance->GetPositionScore(pos, owner);
+
+    if (maxScore > 2)
     {
-        return owner == gameManagerInstance->GetAISide() ? WIN_LOSE_SCORE - depth : depth - WIN_LOSE_SCORE;
+        return owner == gameManagerInstance->GetAISide() ? maxScore - depth : depth - maxScore ;
     }
-    else if (depth == 0)
+    else if (depth == GameTypes::RECURSION_DEPTH)
     {
-        return owner == gameManagerInstance->GetAISide() ? gameManagerInstance->GetPositionScore(pos, owner) : 
-                                                          -gameManagerInstance->GetPositionScore(pos, owner);
+        return owner == gameManagerInstance->GetAISide() ? maxScore : -maxScore;
     }
-    std::vector<GameTypes::FieldPos> availableMoves = isMaximizing ? 
+    std::vector<GameTypes::FieldPos> availableMoves = isMaximizing ?
     GetNodeChildsInRange(gameFieldInstance->GetLastPosition(GameTypes::GetOppositePlayer(gameManagerInstance->GetAISide())), fieldSnapshotRadius) :
     GetNodeChildsInRange(gameFieldInstance->GetLastPosition(gameManagerInstance->GetAISide()), fieldSnapshotRadius);
-    int32 bestMoveScore = isMaximizing ? INT32_MIN : INT32_MAX;
+    int32 bestMoveScore = isMaximizing ? INT32_MIN : INT32_MAX ;
     for (SIZE_T i = 0; i < availableMoves.size(); ++i)
     {
         GameTypes::FieldPos tempPos = availableMoves[i];
         if (field[tempPos.i][tempPos.j]->GetPlayer() == GameTypes::ePlayer::PLAYER_NONE)
         {
-            GameTypes::ePlayer currentPlayer = isMaximizing ? gameManagerInstance->GetAISide() : 
-                                 GameTypes::GetOppositePlayer(gameManagerInstance->GetAISide());
+            GameTypes::ePlayer currentPlayer = isMaximizing ? gameManagerInstance->GetAISide() :
+                                               GameTypes::GetOppositePlayer(gameManagerInstance->GetAISide());
+
             field[tempPos.i][tempPos.j]->SetPlayer(currentPlayer);
-            int32 tempBestScore = Minimax({ tempPos.i, tempPos.j }, depth - 1, alpha, beta, currentPlayer, !isMaximizing, fieldSnapshotRadius);
+            int32 tempBestScore = Minimax({ tempPos.i, tempPos.j }, depth + 1, alpha, beta, currentPlayer, owner == gameManagerInstance->GetAISide(), fieldSnapshotRadius);
             field[tempPos.i][tempPos.j]->SetPlayer(GameTypes::ePlayer::PLAYER_NONE);
+
+            int32 temp = bestMoveScore;
+
+            if ((tempBestScore > bestMoveScore && isMaximizing) ||
+                (tempBestScore <= bestMoveScore && !isMaximizing))
+            {
+                bestMoveScore = tempBestScore;
+            }
 
             if (isMaximizing)
             {
-                bestMoveScore = FGenericPlatformMath::Max(tempBestScore, bestMoveScore);
                 alpha = FGenericPlatformMath::Max(alpha, tempBestScore);
-                if (beta <= alpha)
-                {
-                    return alpha;
-                }
             }
             else
             {
-                bestMoveScore = FGenericPlatformMath::Min(tempBestScore, bestMoveScore);
                 beta = FGenericPlatformMath::Min(beta, tempBestScore);
-                if (beta <= alpha)
-                {
-                    return beta;
-                }
+            }
+            if (beta <= alpha)
+            {
+                break;
             }
         }
     }
