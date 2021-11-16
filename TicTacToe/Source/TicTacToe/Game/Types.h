@@ -5,6 +5,8 @@ namespace GameTypes
     const int8   WIN_POINTS            = 4;
     const uint8  RECURSION_DEPTH       = 3;
     const uint8  FIELD_SNAPSHOT_RADIUS = 4;
+    const int32  MINIMUM_SCORE         = 2;
+    const float  TICK_DELAY            = 2.f;
     const SIZE_T GAME_FIELD_SIZE       = 8 * 8;
 
     enum class ePlayer

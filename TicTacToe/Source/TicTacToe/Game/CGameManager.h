@@ -28,9 +28,9 @@ public:
 
     bool CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner);
 
-    int32 GetPositionScore(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner);
+    int32 GetPositionScore(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner) const;
     
-    void MadeAMove(ATicTacToeBlock* block);
+    void OnMoveMade(ATicTacToeBlock* block);
 
     void SetAISide(const GameTypes::ePlayer& side) { mAISide = side; }
     GameTypes::ePlayer GetAISide() const { return mAISide; }
@@ -43,14 +43,14 @@ public:
 
 private:
     void GetScoreByDirections(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner,
-                              const GameTypes::eCheckFieldDirection checkDirection = GameTypes::eCheckFieldDirection::IDLE );
+                              const GameTypes::eCheckFieldDirection checkDirection = GameTypes::eCheckFieldDirection::IDLE ) const;
     
     CGameManager() : mAISide(GameTypes::GetRandomPlayer())
                     ,mPlayerSide(GameTypes::GetOppositePlayer(mAISide))
                     ,mGameMode(GameTypes::GameMode::HOTSEAT)
     {}
 
-    bool IsMaxGlobalCounted();
+    bool IsMaxGlobalCounted() const;
 
     GameTypes::ePlayer mAISide;
     GameTypes::ePlayer mPlayerSide;

@@ -20,6 +20,7 @@ public:
     //realisation of minimax algorithm with alpha-beta pruning
     int32 Minimax(const GameTypes::FieldPos& pos, int32 depth, int32 alpha, int32 beta,
                   const GameTypes::ePlayer owner, const bool isMaximizing, const int32 fieldSnapshotRadius);
-    std::vector<GameTypes::FieldPos> GetNodeChildsInRange(const GameTypes::FieldPos& pos, const int32 radius);
+    void StorePositionSnapshot(const GameTypes::FieldPos& node,
+                               std::vector<GameTypes::FieldPos>& storeTo, const int32 radius);
 };
 

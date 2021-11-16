@@ -17,7 +17,7 @@ AAIActor::AAIActor()
 void AAIActor::BeginPlay()
 {
     Super::BeginPlay();
-    float DeltaTime = 2;
+    float DeltaTime = GameTypes::TICK_DELAY;
     SetActorTickInterval(DeltaTime);
 }
 
@@ -25,11 +25,10 @@ void AAIActor::BeginPlay()
 void AAIActor::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    auto gameManagerInstance = CGameManager::GetInstance();
     mAIHandler.SetIsAIVsAI(IsAIVSAI);
 
     if (IsPlayerVSAi || IsAIVSAI)
     {
-        CGameManager::GetInstance()->MadeAMove(mAIHandler.Move());
+        CGameManager::GetInstance()->OnMoveMade(mAIHandler.Move());
     }
 }

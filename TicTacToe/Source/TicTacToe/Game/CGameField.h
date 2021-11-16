@@ -23,8 +23,6 @@ public:
     void StoreLastMovePos(const GameTypes::FieldPos& pos, const GameTypes::ePlayer owner);
     const GameTypes::FieldPos& GetLastPosition(const GameTypes::ePlayer owner) const;
 
-    std::vector<GameTypes::FieldPos> GetAvailableMoves();
-
 private:
     CGameField() : mLastPosX(), mLastPosO(), mField() {};
     GameTypes::FieldPos mLastPosX;

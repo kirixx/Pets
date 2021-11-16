@@ -7,24 +7,24 @@
 int32 CAlgorithm::Minimax(const GameTypes::FieldPos& pos, int32 depth, int32 alpha, int32 beta,
                           const GameTypes::ePlayer owner, const bool isMaximizing, const int32 fieldSnapshotRadius)
 {
-    auto gameFieldInstance = CGameField::GetInstance();
-    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
+    using GameField = std::vector<std::vector<ATicTacToeBlock*>>&;
+    CGameField* gameFieldInstance = CGameField::GetInstance();
+    const CGameManager* gameManagerInstance = CGameManager::GetInstance();
     GameField field = gameFieldInstance->GetGameField();
-    auto gameManagerInstance = CGameManager::GetInstance();
 
     int32 maxScore = gameManagerInstance->GetPositionScore(pos, owner);
 
-    if (maxScore > 2)
+    if (maxScore > GameTypes::MINIMUM_SCORE)
     {
         return owner == gameManagerInstance->GetAISide() ? maxScore - depth : depth - maxScore ;
     }
-    else if (depth == GameTypes::RECURSION_DEPTH)
+    else if (GameTypes::RECURSION_DEPTH == depth)
     {
         return owner == gameManagerInstance->GetAISide() ? maxScore : -maxScore;
     }
-    std::vector<GameTypes::FieldPos> availableMoves = isMaximizing ?
-    GetNodeChildsInRange(gameFieldInstance->GetLastPosition(GameTypes::GetOppositePlayer(gameManagerInstance->GetAISide())), fieldSnapshotRadius) :
-    GetNodeChildsInRange(gameFieldInstance->GetLastPosition(gameManagerInstance->GetAISide()), fieldSnapshotRadius);
+    std::vector<GameTypes::FieldPos> availableMoves; 
+    isMaximizing ? StorePositionSnapshot(gameFieldInstance->GetLastPosition(GameTypes::GetOppositePlayer(gameManagerInstance->GetAISide())), availableMoves, fieldSnapshotRadius) :
+    StorePositionSnapshot(gameFieldInstance->GetLastPosition(gameManagerInstance->GetAISide()), availableMoves, fieldSnapshotRadius);
     int32 bestMoveScore = isMaximizing ? INT32_MIN : INT32_MAX ;
     for (SIZE_T i = 0; i < availableMoves.size(); ++i)
     {
@@ -37,8 +37,6 @@ int32 CAlgorithm::Minimax(const GameTypes::FieldPos& pos, int32 depth, int32 alp
             field[tempPos.i][tempPos.j]->SetPlayer(currentPlayer);
             int32 tempBestScore = Minimax({ tempPos.i, tempPos.j }, depth + 1, alpha, beta, currentPlayer, owner == gameManagerInstance->GetAISide(), fieldSnapshotRadius);
             field[tempPos.i][tempPos.j]->SetPlayer(GameTypes::ePlayer::PLAYER_NONE);
-
-            int32 temp = bestMoveScore;
 
             if ((tempBestScore > bestMoveScore && isMaximizing) ||
                 (tempBestScore <= bestMoveScore && !isMaximizing))
@@ -63,15 +61,15 @@ int32 CAlgorithm::Minimax(const GameTypes::FieldPos& pos, int32 depth, int32 alp
     return bestMoveScore;
 }
 
-std::vector<GameTypes::FieldPos> CAlgorithm::GetNodeChildsInRange(const GameTypes::FieldPos& node, const int32 radius)
+void CAlgorithm::StorePositionSnapshot(const GameTypes::FieldPos& node, 
+                                       std::vector<GameTypes::FieldPos>& storeTo, const int32 radius)
 {
-    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
+    using GameField = std::vector<std::vector<ATicTacToeBlock*>>&;
     GameField field = CGameField::GetInstance()->GetGameField();
-    std::vector<GameTypes::FieldPos> retVal;
-    retVal.reserve(field.size() * field.size());
+    storeTo.resize(field.size() * field.size());
 
-    SIZE_T borderIDown    = static_cast<int32>((node.i - radius)) >= 0 ? node.i - radius : 0;
-    SIZE_T borderIUp  = (node.i + radius) <= field.size() - 1 ? node.i + radius : field.size() - 1;
+    SIZE_T borderIDown  = static_cast<int32>((node.i - radius)) >= 0 ? node.i - radius : 0;
+    SIZE_T borderIUp    = (node.i + radius) <= field.size() - 1 ? node.i + radius : field.size() - 1;
     SIZE_T borderJLeft  = static_cast<int32>((node.j - radius)) >= 0 ? node.j - radius : 0;
     SIZE_T borderJRight = (node.j + radius) <= field.size() - 1 ? node.j + radius : field.size() - 1;
     
@@ -79,9 +77,7 @@ std::vector<GameTypes::FieldPos> CAlgorithm::GetNodeChildsInRange(const GameType
     {
         for (SIZE_T j = borderJLeft; j <= borderJRight; ++j)
         {
-            retVal.push_back({ i, j });
+            storeTo.push_back({ i, j });
         }
     }
-
-    return retVal;
 }

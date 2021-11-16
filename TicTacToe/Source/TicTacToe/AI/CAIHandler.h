@@ -15,13 +15,12 @@ public:
 
     ~CAIHandler() {}
 
-    ATicTacToeBlock* Move();
+    ATicTacToeBlock* Move() const;
 
     void SetIsAIVsAI(const bool isAIvsAI) { mIsAIVsAi = isAIvsAI; }
 
-    GameTypes::FieldPos DoDumbMove();
+    GameTypes::FieldPos DoDumbMove() const;
 
 private:
     bool mIsAIVsAi;
-
 };

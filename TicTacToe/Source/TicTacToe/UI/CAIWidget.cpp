@@ -35,7 +35,7 @@ bool UCAIWidget::Initialize()
 
 void UCAIWidget::VsAiButtonClicked()
 {
-    auto gameManagerInstance = CGameManager::GetInstance();
+    CGameManager* gameManagerInstance = CGameManager::GetInstance();
     gameManagerInstance->SetAISide(GameTypes::GetRandomPlayer());
     gameManagerInstance->SetPlayerSide(GameTypes::GetOppositePlayer(gameManagerInstance->GetAISide()));
     gameManagerInstance->SetGameMode(GameTypes::GameMode::PLAYER_VS_AI);
@@ -43,7 +43,7 @@ void UCAIWidget::VsAiButtonClicked()
 
 void UCAIWidget::AIVsAIButtonClicked()
 {
-    auto gameManagerInstance = CGameManager::GetInstance();
+    CGameManager* gameManagerInstance = CGameManager::GetInstance();
     gameManagerInstance->SetPlayerSide(GameTypes::ePlayer::PLAYER_NONE);
     gameManagerInstance->SetGameMode(GameTypes::GameMode::AI_VS_AI);
 
@@ -51,7 +51,7 @@ void UCAIWidget::AIVsAIButtonClicked()
 
 void UCAIWidget::HotseatButtonClicked()
 {
-    auto gameManagerInstance = CGameManager::GetInstance();
+    CGameManager* gameManagerInstance = CGameManager::GetInstance();
     gameManagerInstance->SetPlayerSide(gameManagerInstance->GetPlayerTurn());
     gameManagerInstance->SetGameMode(GameTypes::GameMode::HOTSEAT);
 }

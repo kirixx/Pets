@@ -9,10 +9,14 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Math/UnrealMathUtility.h"
 
-ATicTacToeBlock* CAIHandler::Move()
+ATicTacToeBlock* CAIHandler::Move() const
 {
-    auto gameManagerInstance = CGameManager::GetInstance();
-    auto gameFieldInstance = CGameField::GetInstance();
+    using GameField = std::vector<std::vector<ATicTacToeBlock*>>&;
+    CGameManager* gameManagerInstance = CGameManager::GetInstance();
+    CGameField* gameFieldInstance = CGameField::GetInstance();
+    GameField field = gameFieldInstance->GetGameField();
+    ATicTacToeBlock* bestMove = nullptr;
+    int32 bestMoveScore = INT32_MIN;
     if (CGameManager::sPlayerTurn != gameManagerInstance->GetAISide())
     {
         if (mIsAIVsAi)
@@ -21,17 +25,13 @@ ATicTacToeBlock* CAIHandler::Move()
         }
         return nullptr;
     }
-    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
-    GameField field = gameFieldInstance->GetGameField();
-    ATicTacToeBlock* bestMove = nullptr;
-    int32 bestMoveScore = INT32_MIN;
-
+    
     CAlgorithm algorithm;
-    std::vector<GameTypes::FieldPos> availableMoves = 
-        algorithm.GetNodeChildsInRange(
+    std::vector<GameTypes::FieldPos> availableMoves;
+        algorithm.StorePositionSnapshot(
             gameFieldInstance->GetLastPosition(
                 GameTypes::GetOppositePlayer(
-                    gameManagerInstance->GetAISide())), GameTypes::FIELD_SNAPSHOT_RADIUS);
+                    gameManagerInstance->GetAISide())), availableMoves, GameTypes::FIELD_SNAPSHOT_RADIUS);
 
     for (SIZE_T i  = 0; i < availableMoves.size(); ++i)
     {
@@ -52,7 +52,7 @@ ATicTacToeBlock* CAIHandler::Move()
     bestMove->SetPlayer(gameManagerInstance->GetAISide());
     if (mIsAIVsAi)
     {
-        if (bestMoveScore == 1 - GameTypes::RECURSION_DEPTH)
+        if (1 - GameTypes::RECURSION_DEPTH == bestMoveScore)
         {
             bestMove->SetFieldPos(DoDumbMove());
         }
@@ -61,7 +61,7 @@ ATicTacToeBlock* CAIHandler::Move()
     return  bestMove;
 }
 
-GameTypes::FieldPos CAIHandler::DoDumbMove()
+GameTypes::FieldPos CAIHandler::DoDumbMove() const 
 {
     SIZE_T i = 0;
     SIZE_T j = 0;

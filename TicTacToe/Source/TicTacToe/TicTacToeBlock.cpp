@@ -52,7 +52,7 @@ void ATicTacToeBlock::OnFingerPressedBlock(ETouchIndex::Type FingerIndex, UPrimi
 void ATicTacToeBlock::HandleClicked()
 {
 	// Check we are not already active
-	auto gameManagerInstance = CGameManager::GetInstance();
+	CGameManager* gameManagerInstance = CGameManager::GetInstance();
 
 	if (GameTypes::GameMode::HOTSEAT == gameManagerInstance->GetGameMode())
 	{
@@ -68,7 +68,7 @@ void ATicTacToeBlock::HandleClicked()
 		{
 			OwningGrid->AddScore();
 		}
-		CGameManager::GetInstance()->MadeAMove(this);
+		CGameManager::GetInstance()->OnMoveMade(this);
 	}
 }
 

@@ -5,7 +5,7 @@
 #include "Renderer/CMaterialManager.h"
 #include "Engine/World.h"
 
-GameTypes::ePlayer CGameManager::sPlayerTurn = GameTypes::ePlayer::PLAYER_X;
+GameTypes::ePlayer CGameManager::sPlayerTurn  = GameTypes::ePlayer::PLAYER_X;
 int32  CGameManager::sCurrentScore            = 0;
 int32  CGameManager::sCurrentScoreForOpponent = 0;
 int32  CGameManager::sMaxScoreGlobal          = 0;
@@ -25,16 +25,14 @@ namespace GameManagerHelpers
     }
 }
 
-void CGameManager::MadeAMove(ATicTacToeBlock* block)
+void CGameManager::OnMoveMade(ATicTacToeBlock* block)
 {
-    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
-    GameField field = CGameField::GetInstance()->GetGameField();
     if (!block)
     {
         return;
     }
     // Change material
-    if (sPlayerTurn == GameTypes::ePlayer::PLAYER_X)
+    if (GameTypes::ePlayer::PLAYER_X == sPlayerTurn)
     {
         block->GetBlockMesh()->SetMaterial(0, CMaterialManager::GetInstance().TTT_Cross_Texture);
     }
@@ -57,7 +55,7 @@ void CGameManager::MadeAMove(ATicTacToeBlock* block)
     }
 }
 
-int32 CGameManager::GetPositionScore(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner)
+int32 CGameManager::GetPositionScore(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner) const
 {
     sMaxScoreGlobal = 0;
     sCurrentScore = 0;
@@ -67,9 +65,9 @@ int32 CGameManager::GetPositionScore(const GameTypes::FieldPos& fieldPosition, c
 }
 
 void CGameManager::GetScoreByDirections(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner,
-                                        const GameTypes::eCheckFieldDirection checkDirection)
+                                        const GameTypes::eCheckFieldDirection checkDirection) const
 {
-    using GameField = std::vector<std::vector<ATicTacToeBlock*>>;
+    using GameField = std::vector<std::vector<ATicTacToeBlock*>>&;
     GameField field = CGameField::GetInstance()->GetGameField();
 
     if ((fieldPosition.i < 0 || fieldPosition.j < 0) ||
@@ -151,12 +149,12 @@ void CGameManager::GetScoreByDirections(const GameTypes::FieldPos& fieldPosition
     sMaxScoreGlobal = FGenericPlatformMath::Max(FGenericPlatformMath::Max(sCurrentScore, sCurrentScoreForOpponent + 1), sMaxScoreGlobal);
 }
 
-bool CGameManager::IsMaxGlobalCounted()
+bool CGameManager::IsMaxGlobalCounted() const
 {
     bool retVal = false;
-    if (sCurrentScoreForOpponent == 3 || sCurrentScore == 4)
+    if (sCurrentScoreForOpponent == GameTypes::WIN_POINTS - 1 || sCurrentScore == GameTypes::WIN_POINTS)
     {
-        sMaxScoreGlobal = 4;
+        sMaxScoreGlobal = GameTypes::WIN_POINTS;
         retVal = true;
     }
     return retVal;
@@ -165,12 +163,12 @@ bool CGameManager::IsMaxGlobalCounted()
 bool CGameManager::CheckForWin(const GameTypes::FieldPos& fieldPosition, const GameTypes::ePlayer owner)
 {
     GetPositionScore(fieldPosition, owner);
-    return sCurrentScore >= GameTypes::WIN_POINTS;
+    return GameTypes::WIN_POINTS <= sCurrentScore;
 }
 
 void CGameManager::SetGameMode(const GameTypes::GameMode gameMode)
 {
-    auto gamefieldInstance = CGameField::GetInstance();
+    CGameField* gamefieldInstance = CGameField::GetInstance();
     ACInGameHUD* InGameHUD = Cast<ACInGameHUD>(gamefieldInstance->GetGameField()[0][0]->GetWorld()->GetFirstPlayerController()->GetHUD());
     if (GameTypes::GameMode::PLAYER_VS_AI == gameMode)
     {
